@@ -12,15 +12,18 @@ import (
 func main() {
 	reader := bufio.NewReader(os.Stdin)
 
+	commandMap := make(map[string]commands.Command)
 	cmdList := []commands.Command{
 		commands.EchoCommand{},
 		commands.ExitCommand{},
 	}
 
-	commandMap := make(map[string]commands.Command)
 	for _, cmd := range cmdList {
 		commandMap[cmd.Name()] = cmd
 	}
+
+	helpCmd := commands.HelpCommand{ Commands: commandMap }
+	commandMap[helpCmd.Name()] = helpCmd
 
 	for {
 		fmt.Print("$ ")
