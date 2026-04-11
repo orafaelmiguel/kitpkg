@@ -7,6 +7,7 @@ import (
 	"strings"
 
 	"kitpkg/internal/commands"
+	"kitpkg/internal/parser"
 )
 
 func main() {
@@ -35,7 +36,7 @@ func main() {
 		}
 
 		input = strings.TrimSpace(input)
-		args := strings.Fields(input)
+		args := parser.Parse(input)
 
 		if len(args) == 0 {
 			continue
