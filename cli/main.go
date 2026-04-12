@@ -26,6 +26,20 @@ func main() {
 	helpCmd := commands.HelpCommand{ Commands: commandMap }
 	commandMap[helpCmd.Name()] = helpCmd
 
+	aliases := make(map[string]string)
+
+	aliasCmd := commands.AliasCommand{
+		Aliases: aliases,
+	}
+
+	commandMap[aliasCmd.Name()] = aliasCmd
+
+	unaliasCmd := commands.UnaliasCommand{
+		Aliases: aliases,
+	}
+
+	commandMap[unaliasCmd.Name()] = unaliasCmd
+
 	for {
 		fmt.Print("$ ")
 
@@ -44,6 +58,10 @@ func main() {
 
 		commandName := args[0]
 		params := args[1:]
+
+		if realCmd, exists := aliases[commandName]; exists {
+			commandName = realCmd
+		}		
 
 		if cmd, ok := commandMap[commandName]; ok {
 			cmd.Execute(params)
