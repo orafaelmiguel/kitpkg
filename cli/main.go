@@ -57,7 +57,7 @@ func main() {
 
 		input = strings.TrimSpace(input)
 
-		if input != "" {
+		if input != "" && input != "history" {
     		history = append(history, input)
 		}
 
