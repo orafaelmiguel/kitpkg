@@ -27,7 +27,6 @@ func main() {
 	commandMap[helpCmd.Name()] = helpCmd
 
 	aliases := make(map[string]string)
-
 	aliasCmd := commands.AliasCommand{
 		Aliases: aliases,
 	}
@@ -40,6 +39,13 @@ func main() {
 
 	commandMap[unaliasCmd.Name()] = unaliasCmd
 
+	history := []string{}
+	historyCmd := commands.HistoryCommand{
+		History: &history,
+	}
+
+	commandMap[historyCmd.Name()] = historyCmd
+
 	for {
 		fmt.Print("$ ")
 
@@ -50,6 +56,11 @@ func main() {
 		}
 
 		input = strings.TrimSpace(input)
+
+		if input != "" {
+    		history = append(history, input)
+		}
+
 		args := parser.Parse(input)
 
 		if len(args) == 0 {
