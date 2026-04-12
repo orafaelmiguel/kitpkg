@@ -1,7 +1,6 @@
 package commands
 
 import (
-	"fmt"
 	"strings"
 )
 
@@ -15,6 +14,6 @@ func (c EchoCommand) Description() string {
 	return "Prints text in the terminal."
 }
 
-func (c EchoCommand) Execute(args []string) {
-	fmt.Println(strings.Join(args, " "))
+func (c EchoCommand) Execute(input string, args []string) string {
+	return strings.Join(args, " ")
 }

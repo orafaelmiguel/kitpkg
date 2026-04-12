@@ -12,6 +12,7 @@ func (c ExitCommand) Description() string {
 	return "Exit CLI."
 }
 
-func (c ExitCommand) Execute(args []string) {
+func (c ExitCommand) Execute(input string, args []string) string {
 	os.Exit(0)
+	return ""
 }

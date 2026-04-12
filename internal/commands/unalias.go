@@ -14,10 +14,10 @@ func (u UnaliasCommand) Description() string {
 	return "Removes an alias"
 }
 
-func (u UnaliasCommand) Execute(args []string) {
+func (u UnaliasCommand) Execute(input string, args []string) string {
 	if len(args) == 0 {
 		fmt.Println("usage: unalias <name>")
-		return
+		return ""
 	}
 
 	name := args[0]
@@ -28,4 +28,6 @@ func (u UnaliasCommand) Execute(args []string) {
 	} else {
 		fmt.Println("Alias not found")
 	}
+
+	return ""
 }

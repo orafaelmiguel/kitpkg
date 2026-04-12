@@ -14,12 +14,12 @@ func (a AliasCommand) Description() string {
 	return "Creates a command alias"
 }
 
-func (a AliasCommand) Execute(args []string) {
+func (a AliasCommand) Execute(input string, args []string) string {
 	if len(args) == 0 {
 		for k, v := range a.Aliases {
 			fmt.Printf("%s -> %s\n", k, v)
 		}
-		return
+		return ""
 	}
 
 	if len(args) == 1 {
@@ -29,7 +29,7 @@ func (a AliasCommand) Execute(args []string) {
 		} else {
 			fmt.Println("alias not found")
 		}
-		return
+		return ""
 	}
 
 	name := args[0]
@@ -38,6 +38,8 @@ func (a AliasCommand) Execute(args []string) {
 	a.Aliases[name] = command
 
 	fmt.Printf("Alias '%s' -> '%s'\n", name, command)
+
+	return ""
 }
 
 // todo: load aliases in external file to load in startup 

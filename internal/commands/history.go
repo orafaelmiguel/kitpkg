@@ -14,8 +14,10 @@ func (h HistoryCommand) Description() string {
 	return "Shows command history"
 }
 
-func (h HistoryCommand) Execute(args []string) {
+func (h HistoryCommand) Execute(input string, args []string) string {
 	for i, cmd := range *h.History {
 		fmt.Printf("%d: %s\n", i+1, cmd)
 	}
+
+	return ""
 }
