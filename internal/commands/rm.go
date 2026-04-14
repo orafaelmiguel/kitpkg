@@ -3,6 +3,8 @@ package commands
 import (
 	"fmt"
 	"os"
+
+	"kitpkg/internal/parser"
 )
 
 type RmCommand struct{}
@@ -12,32 +14,46 @@ func (r RmCommand) Name() string {
 }
 
 func (r RmCommand) Description() string {
-	return "Removes a file"
+	return "Removes files or directories"
 }
 
 func (r RmCommand) Execute(input string, args []string) string {
-	if len(args) == 0 {
-		fmt.Println("usage: rm <file>")
+	flags, params := parser.ParseFlags(args)
+
+	recursive := flags["r"]
+	force := flags["f"]
+
+	if len(params) == 0 {
+		fmt.Println("usage: rm [-r] [-f] <target>")
 		return ""
 	}
 
-	filename := args[0]
+	target := params[0]
 
-	info, err := os.Stat(filename)
+	info, err := os.Stat(target)
 	if err != nil {
-		fmt.Println("error:", err)
+		if !force {
+			fmt.Println("error:", err)
+		}
 		return ""
 	}
 
 	if info.IsDir() {
-		fmt.Println("cannot remove directory (use future -r flag)")
+		if !recursive {
+			fmt.Println("cannot remove directory (use -r)")
+			return ""
+		}
+
+		err = os.RemoveAll(target)
+		if err != nil && !force {
+			fmt.Println("error removing directory:", err)
+		}
 		return ""
 	}
 
-	err = os.Remove(filename)
-	if err != nil {
+	err = os.Remove(target)
+	if err != nil && !force {
 		fmt.Println("error removing file:", err)
-		return ""
 	}
 
 	return ""
