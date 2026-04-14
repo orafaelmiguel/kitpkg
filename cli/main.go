@@ -33,6 +33,7 @@ func main() {
 		commands.LsCommand{},
 		commands.PwdCommand{},
 		commands.CdCommand{},
+		commands.TouchCommand{},
 	}
 
 	for _, cmd := range cmdList {
@@ -57,7 +58,7 @@ func main() {
 		if err != nil {
 			fmt.Print("$ ")
 		} else {
-			fmt.Printf("%s > ", cwd)
+			fmt.Printf("%s> ", cwd)
 		}
 
 		var input string
