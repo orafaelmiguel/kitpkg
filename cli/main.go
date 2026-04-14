@@ -14,6 +14,16 @@ import (
 	"kitpkg/internal/shell"
 )
 
+func redraw(input string, cursorPos int) {
+	fmt.Print("\r\033[K")
+	fmt.Print(shell.GetPrompt() + input)
+
+	moveBack := len(input) - cursorPos
+	if moveBack > 0 {
+		fmt.Printf("\033[%dD", moveBack)
+	}
+}
+
 func main() {
 	reader := bufio.NewReader(os.Stdin)
 
@@ -55,12 +65,13 @@ func main() {
 	history := []string{}
 	commandMap["history"] = commands.HistoryCommand{History: &history}
 
-	historyIndex := -1 
+	historyIndex := -1
 
 	for {
 		fmt.Print(shell.GetPrompt())
 
 		var input string
+		cursorPos := 0
 
 		for {
 			char, err := reader.ReadByte()
@@ -74,16 +85,15 @@ func main() {
 				fmt.Println()
 				goto EXECUTE
 			case 127:
-				if len(input) > 0 {
-					input = input[:len(input)-1]
-					fmt.Print("\b \b")
+				if cursorPos > 0 {
+					input = input[:cursorPos-1] + input[cursorPos:]
+					cursorPos--
+					redraw(input, cursorPos)
 				}
 			case '\t':
 				input = shell.HandleTab(input, commandMap)
-
-				fmt.Print("\r\033[K")
-				cwd, _ := os.Getwd()
-				fmt.Printf("%s> %s", cwd, input)
+				cursorPos = len(input)
+				redraw(input, cursorPos)
 			case 27:
 				next1, _ := reader.ReadByte()
 				next2, _ := reader.ReadByte()
@@ -94,6 +104,7 @@ func main() {
 						if len(history) > 0 && historyIndex < len(history)-1 {
 							historyIndex++
 							input = history[len(history)-1-historyIndex]
+							cursorPos = len(input)
 						}
 					case 66:
 						if historyIndex > 0 {
@@ -103,16 +114,24 @@ func main() {
 							historyIndex = -1
 							input = ""
 						}
+						cursorPos = len(input)
+					case 67:
+						if cursorPos < len(input) {
+							cursorPos++
+						}
+					case 68:
+						if cursorPos > 0 {
+							cursorPos--
+						}
 					}
-					fmt.Print("\r\033[K")
-					cwd, _ := os.Getwd()
-					fmt.Printf("%s> %s", cwd, input)
-				}
 
+					redraw(input, cursorPos)
+				}
 			default:
-				historyIndex = -1 
-				input += string(char)
-				fmt.Print(string(char))
+				historyIndex = -1
+				input = input[:cursorPos] + string(char) + input[cursorPos:]
+				cursorPos++
+				redraw(input, cursorPos)
 			}
 		}
 

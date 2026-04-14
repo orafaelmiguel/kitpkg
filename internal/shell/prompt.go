@@ -32,5 +32,5 @@ func GetPrompt() string {
 
 	formatted := formatPath(cwd)
 
-	return Blue + formatted + Reset + "" + Green + ">" + Reset + " "
+	return Blue + formatted + Reset + "" + Green + "$" + Reset + " "
 }
