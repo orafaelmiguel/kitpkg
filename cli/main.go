@@ -5,13 +5,23 @@ import (
 	"fmt"
 	"os"
 	"strings"
+	"syscall"
+
+	"golang.org/x/term"
 
 	"kitpkg/internal/commands"
 	"kitpkg/internal/parser"
+	"kitpkg/internal/shell"
 )
 
 func main() {
 	reader := bufio.NewReader(os.Stdin)
+
+	oldState, err := term.MakeRaw(int(syscall.Stdin))
+	if err != nil {
+		panic(err)
+	}
+	defer term.Restore(int(syscall.Stdin), oldState)
 
 	commandMap := make(map[string]commands.Command)
 
@@ -21,6 +31,8 @@ func main() {
 		commands.CatCommand{},
 		commands.GrepCommand{},
 		commands.LsCommand{},
+		commands.PwdCommand{},
+		commands.CdCommand{},
 	}
 
 	for _, cmd := range cmdList {
@@ -34,31 +46,56 @@ func main() {
 
 	aliases := make(map[string]string)
 
-	aliasCmd := commands.AliasCommand{
-		Aliases: aliases,
-	}
-	commandMap[aliasCmd.Name()] = aliasCmd
-
-	unaliasCmd := commands.UnaliasCommand{
-		Aliases: aliases,
-	}
-	commandMap[unaliasCmd.Name()] = unaliasCmd
+	commandMap["alias"] = commands.AliasCommand{Aliases: aliases}
+	commandMap["unalias"] = commands.UnaliasCommand{Aliases: aliases}
 
 	history := []string{}
-
-	historyCmd := commands.HistoryCommand{
-		History: &history,
-	}
-	commandMap[historyCmd.Name()] = historyCmd
+	commandMap["history"] = commands.HistoryCommand{History: &history}
 
 	for {
-		fmt.Print("$ ")
-
-		input, err := reader.ReadString('\n')
+		cwd, err := os.Getwd()
 		if err != nil {
-			fmt.Println("ERROR:", err)
-			continue
+			fmt.Print("$ ")
+		} else {
+			fmt.Printf("%s > ", cwd)
 		}
+
+		var input string
+
+		for {
+			char, err := reader.ReadByte()
+			if err != nil {
+				fmt.Println("\nERROR:", err)
+				break
+			}
+
+			switch char {
+
+			case '\r', '\n':
+				fmt.Println()
+				goto EXECUTE
+
+			case 127:
+				if len(input) > 0 {
+					input = input[:len(input)-1]
+					fmt.Print("\b \b")
+				}
+
+			case '\t':
+				input = shell.HandleTab(input, commandMap)
+
+				fmt.Print("\r\033[K")
+
+				cwd, _ := os.Getwd()
+				fmt.Printf("%s > %s", cwd, input)
+
+			default:
+				input += string(char)
+				fmt.Print(string(char))
+			}
+		}
+
+	EXECUTE:
 
 		input = strings.TrimSpace(input)
 
