@@ -1,1 +1,3 @@
-.txt file test OK!  
+hello
+world
+hello again
