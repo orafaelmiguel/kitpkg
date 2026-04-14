@@ -20,6 +20,7 @@ func main() {
 		commands.ExitCommand{},
 		commands.CatCommand{},
 		commands.GrepCommand{},
+		commands.LsCommand{},
 	}
 
 	for _, cmd := range cmdList {
