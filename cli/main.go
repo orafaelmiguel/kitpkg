@@ -47,6 +47,7 @@ func main() {
 		commands.MkdirCommand{},
 		commands.RmCommand{},
 		commands.CpCommand{},
+		commands.MvCommand{},
 	}
 
 	for _, cmd := range cmdList {
