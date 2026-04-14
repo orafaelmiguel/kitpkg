@@ -9,14 +9,8 @@ import (
 )
 
 func HandleTab(input string, commandMap map[string]commands.Command) string {
-	args := strings.Fields(input)
-
-	if len(args) == 0 {
-		return input
-	}
-
-	if len(args) == 1 && !strings.Contains(input, " ") {
-		prefix := args[0]
+	if !strings.Contains(input, " ") {
+		prefix := input
 
 		var matches []string
 		for name := range commandMap {
@@ -32,6 +26,7 @@ func HandleTab(input string, commandMap map[string]commands.Command) string {
 		return input
 	}
 
+	args := strings.Split(input, " ")
 	lastArg := args[len(args)-1]
 
 	dir := "."
