@@ -58,12 +58,7 @@ func main() {
 	historyIndex := -1 
 
 	for {
-		cwd, err := os.Getwd()
-		if err != nil {
-			fmt.Print("$ ")
-		} else {
-			fmt.Printf("%s> ", cwd)
-		}
+		fmt.Print(shell.GetPrompt())
 
 		var input string
 
