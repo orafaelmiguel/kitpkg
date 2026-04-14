@@ -18,6 +18,7 @@ func main() {
 	cmdList := []commands.Command{
 		commands.EchoCommand{},
 		commands.ExitCommand{},
+		commands.CatCommand{},
 	}
 
 	for _, cmd := range cmdList {
