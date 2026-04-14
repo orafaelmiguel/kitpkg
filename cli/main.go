@@ -55,6 +55,8 @@ func main() {
 	history := []string{}
 	commandMap["history"] = commands.HistoryCommand{History: &history}
 
+	historyIndex := -1 
+
 	for {
 		cwd, err := os.Getwd()
 		if err != nil {
@@ -73,26 +75,47 @@ func main() {
 			}
 
 			switch char {
-
 			case '\r', '\n':
 				fmt.Println()
 				goto EXECUTE
-
 			case 127:
 				if len(input) > 0 {
 					input = input[:len(input)-1]
 					fmt.Print("\b \b")
 				}
-
 			case '\t':
 				input = shell.HandleTab(input, commandMap)
 
 				fmt.Print("\r\033[K")
-
 				cwd, _ := os.Getwd()
-				fmt.Printf("%s > %s", cwd, input)
+				fmt.Printf("%s> %s", cwd, input)
+			case 27:
+				next1, _ := reader.ReadByte()
+				next2, _ := reader.ReadByte()
+
+				if next1 == 91 {
+					switch next2 {
+					case 65:
+						if len(history) > 0 && historyIndex < len(history)-1 {
+							historyIndex++
+							input = history[len(history)-1-historyIndex]
+						}
+					case 66:
+						if historyIndex > 0 {
+							historyIndex--
+							input = history[len(history)-1-historyIndex]
+						} else {
+							historyIndex = -1
+							input = ""
+						}
+					}
+					fmt.Print("\r\033[K")
+					cwd, _ := os.Getwd()
+					fmt.Printf("%s> %s", cwd, input)
+				}
 
 			default:
+				historyIndex = -1 
 				input += string(char)
 				fmt.Print(string(char))
 			}
