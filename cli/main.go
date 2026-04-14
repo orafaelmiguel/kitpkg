@@ -34,6 +34,7 @@ func main() {
 		commands.PwdCommand{},
 		commands.CdCommand{},
 		commands.TouchCommand{},
+		commands.MkdirCommand{},
 	}
 
 	for _, cmd := range cmdList {
