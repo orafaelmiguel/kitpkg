@@ -149,7 +149,8 @@ func main() {
 			history = append(history, input)
 		}
 
-		parts := strings.Split(input, "|")
+		redir := parser.ParseRedirection(input)
+		parts := strings.Split(redir.Command, "|")
 
 		var result string
 
@@ -178,8 +179,29 @@ func main() {
 			result = cmd.Execute(result, params)
 		}
 
-		if result != "" {
-			fmt.Println(result)
+		if redir.File != "" {
+			var file *os.File
+			var err error
+
+			if redir.Append {
+				file, err = os.OpenFile(redir.File, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+			} else {
+				file, err = os.Create(redir.File)
+			}
+
+			if err != nil {
+				fmt.Println("error writing file:", err)
+				return
+			}
+			defer file.Close()
+
+			if result != "" {
+				file.WriteString(result + "\n")
+			}
+		} else {
+			if result != "" {
+				fmt.Println(result)
+			}
 		}
 	}
 }
