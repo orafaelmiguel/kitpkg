@@ -49,6 +49,8 @@ func main() {
 		commands.CpCommand{},
 		commands.MvCommand{},
 		commands.ReplaceCommand{},
+		commands.UpperCommand{},
+		commands.LowerCommand{},
 	}
 
 	for _, cmd := range cmdList {
