@@ -51,6 +51,7 @@ func main() {
 		commands.ReplaceCommand{},
 		commands.UpperCommand{},
 		commands.LowerCommand{},
+		commands.JsonFmtCommand{},
 	}
 
 	for _, cmd := range cmdList {
