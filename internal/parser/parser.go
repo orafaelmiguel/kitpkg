@@ -4,24 +4,33 @@ func Parse(input string) []string {
 	var args []string
 	var current string
 	inQuotes := false
+	var quoteChar byte
 
 	for i := 0; i < len(input); i++ {
-		char := input[i]
+		c := input[i]
 
-		switch char {
-		case '"':
-			inQuotes = !inQuotes
+		switch c {
+
+		case '"', '\'':
+			if inQuotes && c == quoteChar {
+				inQuotes = false
+			} else if !inQuotes {
+				inQuotes = true
+				quoteChar = c
+			} else {
+				current += string(c)
+			}
 
 		case ' ':
 			if inQuotes {
-				current += string(char)
+				current += " "
 			} else if current != "" {
 				args = append(args, current)
 				current = ""
 			}
 
 		default:
-			current += string(char)
+			current += string(c)
 		}
 	}
 
